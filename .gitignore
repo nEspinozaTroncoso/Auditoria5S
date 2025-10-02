@@ -1,0 +1,13 @@
+
+11 lines (9 loc) · 124 Bytes
+!**/__pycache__/
+**/__pycache__/
+/__pycache__/
+
+!**/instance/
+**/instance/
+/instance/
+
+!**/env-audit/
+**/env-audit/
+/env-audit/
