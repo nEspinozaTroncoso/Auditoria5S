@@ -13,12 +13,12 @@ Nuevo Registro
         {% for seccion, preguntas in secciones.items() %}
         <div class="seccion">
             <h2>{{ seccion }}</h2>
-            {% for pregunta in preguntas %}
+            {% for pregunta_obj in preguntas %}
             <div class="pregunta">
-                <label>{{ pregunta }}</label>
+                <label>{{ pregunta_obj.pregunta }}</label>
                 <select name="{{ seccion }}_{{ loop.index0 }}">
-                    {% for i in range(5) %}
-                    <option value="{{ i }}">{{ i }}</option>
+                    {% for opcion in pregunta_obj.opciones %}
+                    <option value="{{ opcion.valor }}">{{ opcion.texto }}</option>
                     {% endfor %}
                 </select>
                 <input type="file" name="{{ seccion }}_{{ loop.index0 }}_img">

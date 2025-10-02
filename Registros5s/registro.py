@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, url_for
+from flask import Blueprint, request, render_template, url_for, current_app
 from .models import Auditoria, Respuesta
 from Registros5s import db
 import os
@@ -7,28 +7,118 @@ bp = Blueprint("registro", __name__, url_prefix="/registro")
 
 secciones = {
     "Seiri": [
-        "¿Los materiales innecesarios están eliminados?",
-        "¿Las herramientas están ordenadas?",
+        {
+            "pregunta": "¿Los materiales innecesarios están eliminados?",
+            "opciones": [
+                {"texto": "0", "valor": 0},
+                {"texto": "1", "valor": 25},
+                {"texto": "2", "valor": 50},
+                {"texto": "3", "valor": 75},
+                {"texto": "4", "valor": 100},
+            ],
+        },
+        {
+            "pregunta": "¿Las herramientas están ordenadas?",
+            "opciones": [
+                {"texto": "Cumple", "valor": 100},
+                {"texto": "No cumple", "valor": 0},
+            ],
+        },
     ],
     "Seiton": [
-        "¿Cada objeto tiene un lugar definido?",
-        "¿Es fácil encontrar lo que se necesita?",
+        {
+            "pregunta": "¿Cada objeto tiene un lugar definido?",
+            "opciones": [
+                {"texto": "0", "valor": 0},
+                {"texto": "1", "valor": 25},
+                {"texto": "2", "valor": 50},
+                {"texto": "3", "valor": 75},
+                {"texto": "4", "valor": 100},
+            ],
+        },
+        {
+            "pregunta": "¿Es fácil encontrar lo que se necesita?",
+            "opciones": [
+                {"texto": "Sí", "valor": 100},
+                {"texto": "No", "valor": 0},
+            ],
+        },
     ],
     "Seiso": [
-        "¿El área está limpia?",
-        "¿Se detectan problemas de limpieza?",
+        {
+            "pregunta": "¿El área está limpia?",
+            "opciones": [
+                {"texto": "0", "valor": 0},
+                {"texto": "1", "valor": 25},
+                {"texto": "2", "valor": 50},
+                {"texto": "3", "valor": 75},
+                {"texto": "4", "valor": 100},
+            ],
+        },
+        {
+            "pregunta": "¿Se detectan problemas de limpieza?",
+            "opciones": [
+                {"texto": "Cumple", "valor": 100},
+                {"texto": "No cumple", "valor": 0},
+            ],
+        },
     ],
     "Seiketsu": [
-        "¿Se mantienen estándares visuales?",
-        "¿Existen reglas claras para mantener el orden?",
+        {
+            "pregunta": "¿Se mantienen estándares visuales?",
+            "opciones": [
+                {"texto": "0", "valor": 0},
+                {"texto": "1", "valor": 25},
+                {"texto": "2", "valor": 50},
+                {"texto": "3", "valor": 75},
+                {"texto": "4", "valor": 100},
+            ],
+        },
+        {
+            "pregunta": "¿Existen reglas claras para mantener el orden?",
+            "opciones": [
+                {"texto": "Sí", "valor": 100},
+                {"texto": "No", "valor": 0},
+            ],
+        },
     ],
     "Shitsuke": [
-        "¿Se cumple con la disciplina de las 5S?",
-        "¿El personal sigue los procedimientos?",
+        {
+            "pregunta": "¿Se cumple con la disciplina de las 5S?",
+            "opciones": [
+                {"texto": "0", "valor": 0},
+                {"texto": "1", "valor": 25},
+                {"texto": "2", "valor": 50},
+                {"texto": "3", "valor": 75},
+                {"texto": "4", "valor": 100},
+            ],
+        },
+        {
+            "pregunta": "¿El personal sigue los procedimientos?",
+            "opciones": [
+                {"texto": "Cumple", "valor": 100},
+                {"texto": "No cumple", "valor": 0},
+            ],
+        },
     ],
     "Seguridad": [
-        "¿Se usan los EPP correctamente?",
-        "¿Existen riesgos visibles?",
+        {
+            "pregunta": "¿Se usan los EPP correctamente?",
+            "opciones": [
+                {"texto": "0", "valor": 0},
+                {"texto": "1", "valor": 25},
+                {"texto": "2", "valor": 50},
+                {"texto": "3", "valor": 75},
+                {"texto": "4", "valor": 100},
+            ],
+        },
+        {
+            "pregunta": "¿Existen riesgos visibles?",
+            "opciones": [
+                {"texto": "Sí", "valor": 0},
+                {"texto": "No", "valor": 100},
+            ],
+        },
     ],
 }
 
@@ -48,21 +138,28 @@ def formulario():
 
         for seccion, preguntas in secciones.items():
             seccion_puntos = 0
-            seccion_max = len(preguntas) * 4
+            seccion_max = (
+                len(preguntas) * 100
+            )  # Ahora cada pregunta puede valer hasta 100
 
-            for idx, pregunta in enumerate(preguntas):
+            for idx, pregunta_obj in enumerate(preguntas):
+                pregunta = pregunta_obj["pregunta"]
+                opciones = pregunta_obj["opciones"]
+
                 key = f"{seccion}_{idx}"
-                valor = int(request.form.get(key, 0))
+                valor = int(
+                    request.form.get(key, 0)
+                )  # El value será el valor ponderado
                 seccion_puntos += valor
 
                 # Guardar imagen
                 imagen = request.files.get(f"{key}_img")
                 imagen_path = None
                 if imagen and imagen.filename != "":
-                    if not os.path.exists(bp.config["UPLOAD_FOLDER"]):
-                        os.makedirs(bp.config["UPLOAD_FOLDER"])
+                    if not os.path.exists(current_app.config["UPLOAD_FOLDER"]):
+                        os.makedirs(current_app.config["UPLOAD_FOLDER"])
                     imagen_path = os.path.join(
-                        bp.config["UPLOAD_FOLDER"], imagen.filename
+                        current_app.config["UPLOAD_FOLDER"], imagen.filename
                     )
                     imagen_path = imagen_path.replace("\\", "/")
 

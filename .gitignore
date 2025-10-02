@@ -11,3 +11,7 @@
 !**/env-audit/
 **/env-audit/
 /env-audit/
+
+!**/uploads/
+**/uploads/
+/uploads/
