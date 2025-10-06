@@ -5,7 +5,7 @@ from Registros5s import db
 bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 ADMIN_USER = "admin"
-ADMIN_PASS = "123456789"
+ADMIN_PASS = "adminpass123456789"
 
 
 @bp.route("/login", methods=["GET", "POST"])
