@@ -3,30 +3,40 @@
 Nuevo Registro
 {% endblock %}
 {% block style %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Formulario Auditoría 5S</h1>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Formulario Auditoría 5S</h1>
     <form method="POST" enctype="multipart/form-data">
         {% for seccion, preguntas in secciones.items() %}
-        <div class="seccion">
-            <h2>{{ seccion }}</h2>
-            {% for pregunta_obj in preguntas %}
-            <div class="pregunta">
-                <label>{{ pregunta_obj.pregunta }}</label>
-                <select name="{{ seccion }}_{{ loop.index0 }}">
-                    {% for opcion in pregunta_obj.opciones %}
-                    <option value="{{ opcion.valor }}">{{ opcion.texto }}</option>
-                    {% endfor %}
-                </select>
-                <input type="file" name="{{ seccion }}_{{ loop.index0 }}_img">
+        <div class="card mb-4">
+            <div class="card-header bg-danger-subtle text-danger-emphasis text-center">
+                <h2 class="h5 mb-0">{{ seccion }}</h2>
             </div>
-            {% endfor %}
+            <div class="card-body">
+                {% for pregunta_obj in preguntas %}
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-5">
+                        <label class="form-label">{{ pregunta_obj.pregunta }}</label>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select" name="{{ seccion }}_{{ loop.index0 }}">
+                            {% for opcion in pregunta_obj.opciones %}
+                            <option value="{{ opcion.valor }}">{{ opcion.texto }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <input class="form-control" type="file" name="{{ seccion }}_{{ loop.index0 }}_img">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
         {% endfor %}
-        <button type="submit">Enviar</button>
+        <button type="submit" class="btn btn-primary btn-lg w-100">Enviar</button>
     </form>
 </div>
 {% endblock %}

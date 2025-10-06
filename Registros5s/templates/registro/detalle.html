@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Detalle Auditoría{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Detalle Auditoría</h1>
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-9">
+            <strong>Fecha:</strong> {{ auditoria.fecha.strftime('%Y-%m-%d %H:%M') }}<br>
+            <strong>Responsable:</strong> {{ auditoria.responsable }}<br>
+            <strong>Porcentaje Total:</strong> {{ auditoria.total }}%
+        </div>
+        <div class="col-md-3 text-end">
+            <a href="{{ url_for('registro.exportar_excel', auditoria_id=auditoria.id) }}" class="btn btn-success w-100">
+                Exportar a Excel
+            </a>
+        </div>
+    </div>
+
+    {% for seccion, respuestas in secciones_respuestas.items() %}
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h3 class="h6 mb-0">{{ seccion }}</h3>
+        </div>
+        <div class="card-body">
+            {% for respuesta in respuestas %}
+            <div class="mb-3">
+                <strong>{{ respuesta.pregunta }}</strong><br>
+                <span>Puntaje: {{ respuesta.puntaje }}</span>
+                {% if respuesta.imagen_path %}
+                <div class="mt-2">
+                    <img src="{{ url_for('static', filename=respuesta.imagen_path) }}" alt="Evidencia"
+                        class="img-thumbnail" style="max-width:200px;">
+                </div>
+                {% endif %}
+            </div>
+            <hr>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+    <a href="{{ url_for('registro.historial') }}" class="btn btn-secondary w-100 mt-4">Volver al Historial</a>
+</div>
+{% endblock %}

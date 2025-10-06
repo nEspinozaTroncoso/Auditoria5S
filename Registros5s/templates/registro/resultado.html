@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}
+Resultado Auditoría
+{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Resultado Auditoría 5S</h1>
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white text-center">
+            <h2 class="h5 mb-0">Resumen General</h2>
+        </div>
+        <div class="card-body">
+            <h4 class="mb-3">Total: <span class="badge bg-success">{{ total }}%</span></h4>
+        </div>
+    </div>
+    {% for seccion, porcentaje in resultados.items() %}
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">
+            <h3 class="h6 mb-0">{{ seccion }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-6">
+                    <strong>Porcentaje:</strong> {{ porcentaje }}%
+                </div>
+                <div class="col-md-6">
+                    <strong>Imágenes adjuntadas:</strong>
+                    {% set imagenes = namespace(count=0) %}
+                    {% for respuesta in respuestas %}
+                    {% if respuesta.seccion == seccion and respuesta.imagen_path %}
+                    {% set imagenes.count = imagenes.count + 1 %}
+                    {% endif %}
+                    {% endfor %}
+                    {{ imagenes.count }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    <a href="{{ url_for('registro.formulario') }}" class="btn btn-secondary w-100 mt-4">Nueva Auditoría</a>
+</div>
+{% endblock %}

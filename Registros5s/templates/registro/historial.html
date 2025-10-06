@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}Historial Auditorías{% endblock %}
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Historial de Auditorías</h1>
+    <form class="row mb-4" method="get">
+        <div class="col-md-4">
+            <input type="date" class="form-control" name="fecha" value="{{ fecha_filtro }}">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary">Filtrar por fecha</button>
+        </div>
+    </form>
+    <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>Fecha</th>
+                <th>Responsable</th>
+                <th>Porcentaje Total</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for auditoria in auditorias.items %}
+            <tr>
+                <td>{{ auditoria.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ auditoria.responsable }}</td>
+                <td>{{ auditoria.total }}%</td>
+                <td>
+                    <a href="{{ url_for('registro.detalle', auditoria_id=auditoria.id) }}"
+                        class="btn btn-info btn-sm">Ver Detalle</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination justify-content-center">
+            {% if auditorias.has_prev %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="{{ url_for('registro.historial', page=auditorias.prev_num, fecha=fecha_filtro) }}">Anterior</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Página {{ auditorias.page }} de {{ auditorias.pages
+                    }}</span></li>
+            {% if auditorias.has_next %}
+            <li class="page-item">
+                <a class="page-link"
+                    href="{{ url_for('registro.historial', page=auditorias.next_num, fecha=fecha_filtro) }}">Siguiente</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}
