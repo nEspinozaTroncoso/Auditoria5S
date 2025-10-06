@@ -8,6 +8,7 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from io import BytesIO
+from openpyxl.drawing.image import Image as XLImage
 
 bp = Blueprint("registro", __name__, url_prefix="/registro")
 
@@ -141,12 +142,13 @@ def exportar_excel(auditoria_id):
         bottom=Side(style="thin"),
     )
 
-    # Agrupar respuestas por sección
     secciones_respuestas = {}
     for respuesta in respuestas:
         secciones_respuestas.setdefault(respuesta.seccion, []).append(respuesta)
 
     row_num = 1
+    img_col = 3  # Columna donde van las imágenes
+
     for seccion, respuestas_seccion in secciones_respuestas.items():
         # Fila de sección
         ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=4)
@@ -174,32 +176,46 @@ def exportar_excel(auditoria_id):
             ws.cell(row=row_num, column=1, value=respuesta.pregunta).border = (
                 thin_border
             )
-            # Mostrar puntaje como porcentaje
             percent = f"{respuesta.puntaje}%" if respuesta.puntaje is not None else ""
             cell_puntaje = ws.cell(row=row_num, column=2, value=percent)
             cell_puntaje.alignment = center_align
             cell_puntaje.border = thin_border
-            ws.cell(
-                row=row_num,
-                column=3,
-                value=respuesta.imagen_path if respuesta.imagen_path else "",
-            ).border = thin_border
+
+            # Insertar imagen si existe
+            if respuesta.imagen_path:
+                img_path = os.path.join(
+                    current_app.static_folder, respuesta.imagen_path
+                )
+                if os.path.exists(img_path):
+                    img = XLImage(img_path)
+                    img.width = 100  # Ajusta el tamaño de la imagen
+                    img.height = 100
+                    img_cell = f"{get_column_letter(img_col)}{row_num}"
+                    ws.add_image(img, img_cell)
+                    ws.row_dimensions[row_num].height = (
+                        80  # Ajusta la altura de la fila
+                    )
+                ws.cell(row=row_num, column=img_col).border = thin_border
+            else:
+                ws.cell(row=row_num, column=img_col, value="").border = thin_border
+
             row_num += 1
 
         # Fila vacía entre secciones
         row_num += 1
 
+    # Porcentaje total al final
+    ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=3)
+    cell_total = ws.cell(row=row_num, column=1)
+    cell_total.value = f"Porcentaje Total: {auditoria.total}%"
+    cell_total.font = Font(bold=True, size=16)
+    cell_total.alignment = center_align
+    cell_total.border = thin_border
+
     # Ajustar ancho de columnas
-    for idx, col in enumerate(ws.columns, 1):
-        max_length = 0
-        column = get_column_letter(idx)
-        for cell in col:
-            try:
-                if cell.value and len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
-                pass
-        ws.column_dimensions[column].width = max_length + 2
+    ws.column_dimensions["A"].width = 50  # Pregunta
+    ws.column_dimensions["B"].width = 15  # Puntaje
+    ws.column_dimensions["C"].width = 18  # Imagen
 
     # Guardar en memoria y enviar
     output = BytesIO()
