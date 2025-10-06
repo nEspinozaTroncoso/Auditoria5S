@@ -9,6 +9,7 @@
     <div class="row mb-3 align-items-center">
         <div class="col-md-9">
             <strong>Fecha:</strong> {{ auditoria.fecha.strftime('%Y-%m-%d %H:%M') }}<br>
+            <strong>Area:</strong> {{ auditoria.area }}<br>
             <strong>Responsable:</strong> {{ auditoria.responsable }}<br>
             <strong>Porcentaje Total:</strong> {{ auditoria.total }}%
         </div>
@@ -41,6 +42,8 @@
         </div>
     </div>
     {% endfor %}
-    <a href="{{ url_for('registro.historial') }}" class="btn btn-secondary w-100 mt-4">Volver al Historial</a>
+    <div class="d-flex justify-content-center mb-5 mt-4">
+        <a href="{{ url_for('registro.historial') }}" class="btn btn-secondary btn-lg px-5">Volver al Historial</a>
+    </div>
 </div>
 {% endblock %}

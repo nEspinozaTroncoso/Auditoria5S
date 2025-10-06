@@ -1,3 +1,14 @@
+RESPONSABLES = [
+    "USUARIO_1",
+    "USUARIO_2",
+    "USUARIO_3",
+]
+AREAS = [
+    "AREA_1",
+    "AREA_2",
+    "AREA_3",
+]
+
 secciones = {
     "Seiri": [
         {

@@ -10,14 +10,23 @@
         <div class="col-md-4">
             <input type="date" class="form-control" name="fecha" value="{{ fecha_filtro }}">
         </div>
+        <div class="col-md-4">
+            <select class="form-select" name="area">
+                <option value="">Todas las áreas</option>
+                {% for area in AREAS %}
+                <option value="{{ area }}" {% if area==area_filtro %}selected{% endif %}>{{ area }}</option>
+                {% endfor %}
+            </select>
+        </div>
         <div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Filtrar por fecha</button>
+            <button type="submit" class="btn btn-primary">Filtrar</button>
         </div>
     </form>
     <table class="table table-bordered table-hover">
         <thead class="table-primary">
             <tr>
                 <th>Fecha</th>
+                <th>Área</th>
                 <th>Responsable</th>
                 <th>Porcentaje Total</th>
                 <th>Acciones</th>
@@ -27,6 +36,7 @@
             {% for auditoria in auditorias.items %}
             <tr>
                 <td>{{ auditoria.fecha.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ auditoria.area }}</td>
                 <td>{{ auditoria.responsable }}</td>
                 <td>{{ auditoria.total }}%</td>
                 <td>

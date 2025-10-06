@@ -19,10 +19,12 @@
                 data-bs-target="#navbarsExample11" aria-controls="navbarsExample11" aria-expanded="false"
                 aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
             <div class="collapse navbar-collapse d-lg-flex" id="navbarsExample11">
-                <a class="navbar-brand col-lg-3 me-0" href="{{ url_for('home.index') }}"><img
-                        src="{{ url_for('static',filename = 'img/Sun_logo.png') }}" alt="Logo" width="90" height="63"
-                        class="d-inline-block align-text-center">Auditorias 5S</a>
-                <ul class="navbar-nav col-lg-6 justify-content-lg-center">
+                <a class="navbar-brand col-2 me-0" href="{{ url_for('home.index') }}">
+                    <img src="{{ url_for('static',filename = 'img/Sun_logo.png') }}" alt="Logo" width="90" height="63"
+                        class="d-inline-block align-text-center">
+                    <span class="ms-3 align-middle">Auditorias 5S</span>
+                </a>
+                <ul class="navbar-nav col-lg-8 justify-content-lg-center">
                     <li class="nav-item"><a href="{{ url_for('registro.formulario') }}" class="nav-link">
                             Nuevo
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

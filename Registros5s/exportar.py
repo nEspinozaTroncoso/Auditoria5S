@@ -25,31 +25,36 @@ def exportar_excel(auditoria_id):
         img_logo = XLImage(logo_path)
         img_logo.width = 180
         img_logo.height = 126
-        ws.add_image(img_logo, "A1")
-        ws.row_dimensions[1].height = 126
+        ws.add_image(img_logo, "B2")
+        ws.row_dimensions[2].height = 90
 
     # --- Título y datos principales ---
-    ws.merge_cells("A2:C2")
-    cell_title = ws["A2"]
+    ws.merge_cells("B3:D3")
+    cell_title = ws["B3"]
     cell_title.value = "Auditoría 5S"
     cell_title.font = Font(bold=True, size=18)
     cell_title.alignment = Alignment(horizontal="center", vertical="center")
 
-    # fecha
-    ws.merge_cells("A3:C3")
-    cell_nombre = ws["A3"]
-    cell_nombre.value = f"Fecha: {auditoria.fecha.strftime('%Y-%m-%d %H:%M')} | Responsable: {auditoria.responsable}"
-    cell_nombre.font = Font(size=12)
-    cell_nombre.alignment = Alignment(horizontal="center", vertical="center")
+    ws.merge_cells("B4:D4")
+    cell_area = ws["B4"]
+    cell_area.value = f"Área: {auditoria.area}"
+    cell_area.font = Font(size=12)
+    cell_area.alignment = Alignment(horizontal="center", vertical="center")
 
-    # responsable
-    ws.merge_cells("A4:C4")
-    cell_nombre = ws["A4"]
-    cell_nombre.value = f"Responsable: {auditoria.responsable}"
-    cell_nombre.font = Font(size=12)
-    cell_nombre.alignment = Alignment(horizontal="center", vertical="center")
+    ws.merge_cells("B5:D5")
+    cell_fecha = ws["B5"]
+    cell_fecha.value = f"Fecha: {auditoria.fecha.strftime('%d-%m-%Y')}"
+    cell_fecha.font = Font(size=12)
+    cell_fecha.alignment = Alignment(horizontal="center", vertical="center")
 
-    start_row = 6  # Comienza después del logo y los datos principales
+    ws.merge_cells("B6:D6")
+    cell_resp = ws["B6"]
+    cell_resp.value = f"Responsable: {auditoria.responsable}"
+    cell_resp.font = Font(size=12)
+    cell_resp.alignment = Alignment(horizontal="center", vertical="center")
+
+    start_row = 8  # Comienza después del logo y los datos principales
+    start_col = 2  # Columna B
 
     # Estilos
     header_font = Font(bold=True, color="FFFFFF")
@@ -69,19 +74,23 @@ def exportar_excel(auditoria_id):
         secciones_respuestas.setdefault(respuesta.seccion, []).append(respuesta)
 
     row_num = start_row
-    img_col = 3  # Columna donde van las imágenes
+    img_col = start_col + 2  # Columna D
 
     for seccion, respuestas_seccion in secciones_respuestas.items():
         # Fila de sección
-        ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=3)
-        cell = ws.cell(row=row_num, column=1)
+        ws.merge_cells(
+            start_row=row_num,
+            start_column=start_col,
+            end_row=row_num,
+            end_column=start_col + 2,
+        )
+        cell = ws.cell(row=row_num, column=start_col)
         cell.value = seccion
         cell.font = section_font
         cell.fill = section_fill
         cell.alignment = center_align
         cell.border = thin_border
-        # Aplica estilos a todas las celdas del rango mergeado (excepto value)
-        for col in range(2, 4):  # Columnas 2 y 3
+        for col in range(start_col + 1, start_col + 3):
             merged_cell = ws.cell(row=row_num, column=col)
             merged_cell.font = section_font
             merged_cell.fill = section_fill
@@ -91,7 +100,7 @@ def exportar_excel(auditoria_id):
 
         # Encabezados
         headers = ["Pregunta", "Puntaje (%)", "Imagen"]
-        for col_num, header in enumerate(headers, start=1):
+        for col_num, header in enumerate(headers, start=start_col):
             cell = ws.cell(row=row_num, column=col_num)
             cell.value = header
             cell.font = header_font
@@ -104,12 +113,14 @@ def exportar_excel(auditoria_id):
         seccion_puntos = 0
         seccion_max = len(respuestas_seccion) * 100
         for respuesta in respuestas_seccion:
-            cell_pregunta = ws.cell(row=row_num, column=1, value=respuesta.pregunta)
+            cell_pregunta = ws.cell(
+                row=row_num, column=start_col, value=respuesta.pregunta
+            )
             cell_pregunta.alignment = center_align
             cell_pregunta.border = thin_border
 
             percent = f"{respuesta.puntaje}%" if respuesta.puntaje is not None else ""
-            cell_puntaje = ws.cell(row=row_num, column=2, value=percent)
+            cell_puntaje = ws.cell(row=row_num, column=start_col + 1, value=percent)
             cell_puntaje.alignment = center_align
             cell_puntaje.border = thin_border
 
@@ -137,10 +148,15 @@ def exportar_excel(auditoria_id):
         seccion_porcentaje = (
             round((seccion_puntos / seccion_max) * 100, 2) if seccion_max else 0
         )
-        ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=3)
-        for col in range(1, 4):  # Columnas 1 a 3
+        ws.merge_cells(
+            start_row=row_num,
+            start_column=start_col,
+            end_row=row_num,
+            end_column=start_col + 2,
+        )
+        for col in range(start_col, start_col + 3):
             cell_seccion_total = ws.cell(row=row_num, column=col)
-            if col == 1:
+            if col == start_col:
                 cell_seccion_total.value = (
                     f"Porcentaje total de la sección: {seccion_porcentaje}%"
                 )
@@ -150,19 +166,24 @@ def exportar_excel(auditoria_id):
         row_num += 2  # Fila vacía entre secciones
 
     # Porcentaje total al final
-    ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=3)
-    for col in range(1, 4):  # Columnas 1 a 3
+    ws.merge_cells(
+        start_row=row_num,
+        start_column=start_col,
+        end_row=row_num,
+        end_column=start_col + 2,
+    )
+    for col in range(start_col, start_col + 3):
         cell_total = ws.cell(row=row_num, column=col)
-        if col == 1:
+        if col == start_col:
             cell_total.value = f"Porcentaje Total General: {auditoria.total}%"
         cell_total.font = Font(bold=True, size=16)
         cell_total.alignment = center_align
         cell_total.border = thin_border
 
     # Ajustar ancho de columnas
-    ws.column_dimensions["A"].width = 50
-    ws.column_dimensions["B"].width = 15
-    ws.column_dimensions["C"].width = 18
+    ws.column_dimensions["B"].width = 50
+    ws.column_dimensions["C"].width = 15
+    ws.column_dimensions["D"].width = 18
 
     # Guardar en memoria y enviar
     output = BytesIO()

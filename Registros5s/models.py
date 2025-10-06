@@ -7,8 +7,9 @@ class Auditoria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     responsable = db.Column(db.String(100))
+    area = db.Column(db.String(100))  # <-- Agrega este campo
     total = db.Column(db.Float)
-    respuestas = db.Relationship("Respuesta", backref="auditoria", lazy=True)
+    respuestas = db.relationship("Respuesta", backref="auditoria", lazy=True)
 
 
 class Respuesta(db.Model):

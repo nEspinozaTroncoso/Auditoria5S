@@ -6,4 +6,4 @@ class Config:
     DEBUG = True
     SECRET_KEY = "dev"
     SQLALCHEMY_DATABASE_URI = SQLITE
-    UPLOAD_FOLDER = "/uploads"
+    UPLOAD_FOLDER = "Registros5s/static/uploads"

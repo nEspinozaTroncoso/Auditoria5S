@@ -10,6 +10,24 @@ Nuevo Registro
 <div class="container mt-5">
     <h1 class="text-center mb-4">Formulario Auditoría 5S</h1>
     <form method="POST" enctype="multipart/form-data">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="area" class="form-label">Área auditada</label>
+                <select class="form-select" name="area" id="area" required>
+                    {% for area in AREAS %}
+                    <option value="{{ area }}">{{ area }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="responsable" class="form-label">Responsable</label>
+                <select class="form-select" name="responsable" id="responsable" required>
+                    {% for nombre in RESPONSABLES %}
+                    <option value="{{ nombre }}">{{ nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
         {% for seccion, preguntas in secciones.items() %}
         <div class="card mb-4">
             <div class="card-header bg-danger-subtle text-danger-emphasis text-center">
