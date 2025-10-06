@@ -13,7 +13,7 @@
             <strong>Porcentaje Total:</strong> {{ auditoria.total }}%
         </div>
         <div class="col-md-3 text-end">
-            <a href="{{ url_for('registro.exportar_excel', auditoria_id=auditoria.id) }}" class="btn btn-success w-100">
+            <a href="{{ url_for('exportar.exportar_excel', auditoria_id=auditoria.id) }}" class="btn btn-success w-100">
                 Exportar a Excel
             </a>
         </div>

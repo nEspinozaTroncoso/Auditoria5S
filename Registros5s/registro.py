@@ -1,14 +1,10 @@
-from flask import Blueprint, request, render_template, url_for, current_app, send_file
+from flask import Blueprint, request, render_template, current_app
 from .models import Auditoria, Respuesta
 from .forms import secciones
 from Registros5s import db
 import os
 from datetime import datetime
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.utils import get_column_letter
-from io import BytesIO
-from openpyxl.drawing.image import Image as XLImage
+
 
 bp = Blueprint("registro", __name__, url_prefix="/registro")
 
@@ -117,114 +113,4 @@ def detalle(auditoria_id):
         "registro/detalle.html",
         auditoria=auditoria,
         secciones_respuestas=secciones_respuestas,
-    )
-
-
-@bp.route("/exportar_excel/<int:auditoria_id>")
-def exportar_excel(auditoria_id):
-    auditoria = Auditoria.query.get_or_404(auditoria_id)
-    respuestas = Respuesta.query.filter_by(auditoria_id=auditoria.id).all()
-
-    wb = openpyxl.Workbook()
-    ws = wb.active
-    ws.title = "Auditoría 5S"
-
-    # Estilos
-    header_font = Font(bold=True, color="FFFFFF")
-    header_fill = PatternFill("solid", fgColor="4F81BD")
-    section_fill = PatternFill("solid", fgColor="A9D08E")
-    section_font = Font(bold=True, color="000000")
-    center_align = Alignment(horizontal="center")
-    thin_border = Border(
-        left=Side(style="thin"),
-        right=Side(style="thin"),
-        top=Side(style="thin"),
-        bottom=Side(style="thin"),
-    )
-
-    secciones_respuestas = {}
-    for respuesta in respuestas:
-        secciones_respuestas.setdefault(respuesta.seccion, []).append(respuesta)
-
-    row_num = 1
-    img_col = 3  # Columna donde van las imágenes
-
-    for seccion, respuestas_seccion in secciones_respuestas.items():
-        # Fila de sección
-        ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=4)
-        cell = ws.cell(row=row_num, column=1)
-        cell.value = seccion
-        cell.font = section_font
-        cell.fill = section_fill
-        cell.alignment = center_align
-        cell.border = thin_border
-        row_num += 1
-
-        # Encabezados
-        headers = ["Pregunta", "Puntaje (%)", "Imagen"]
-        for col_num, header in enumerate(headers, start=1):
-            cell = ws.cell(row=row_num, column=col_num)
-            cell.value = header
-            cell.font = header_font
-            cell.fill = header_fill
-            cell.alignment = center_align
-            cell.border = thin_border
-        row_num += 1
-
-        # Datos de la sección
-        for respuesta in respuestas_seccion:
-            ws.cell(row=row_num, column=1, value=respuesta.pregunta).border = (
-                thin_border
-            )
-            percent = f"{respuesta.puntaje}%" if respuesta.puntaje is not None else ""
-            cell_puntaje = ws.cell(row=row_num, column=2, value=percent)
-            cell_puntaje.alignment = center_align
-            cell_puntaje.border = thin_border
-
-            # Insertar imagen si existe
-            if respuesta.imagen_path:
-                img_path = os.path.join(
-                    current_app.static_folder, respuesta.imagen_path
-                )
-                if os.path.exists(img_path):
-                    img = XLImage(img_path)
-                    img.width = 100  # Ajusta el tamaño de la imagen
-                    img.height = 100
-                    img_cell = f"{get_column_letter(img_col)}{row_num}"
-                    ws.add_image(img, img_cell)
-                    ws.row_dimensions[row_num].height = (
-                        80  # Ajusta la altura de la fila
-                    )
-                ws.cell(row=row_num, column=img_col).border = thin_border
-            else:
-                ws.cell(row=row_num, column=img_col, value="").border = thin_border
-
-            row_num += 1
-
-        # Fila vacía entre secciones
-        row_num += 1
-
-    # Porcentaje total al final
-    ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=3)
-    cell_total = ws.cell(row=row_num, column=1)
-    cell_total.value = f"Porcentaje Total: {auditoria.total}%"
-    cell_total.font = Font(bold=True, size=16)
-    cell_total.alignment = center_align
-    cell_total.border = thin_border
-
-    # Ajustar ancho de columnas
-    ws.column_dimensions["A"].width = 50  # Pregunta
-    ws.column_dimensions["B"].width = 15  # Puntaje
-    ws.column_dimensions["C"].width = 18  # Imagen
-
-    # Guardar en memoria y enviar
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
-    nombre_archivo = f"auditoria_{auditoria.id}.xlsx"
-    return send_file(
-        output,
-        download_name=nombre_archivo,
-        as_attachment=True,
-        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
