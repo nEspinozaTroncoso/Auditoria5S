@@ -10,11 +10,12 @@ def create_app():
     app.config.from_object("config.Config")
     db.init_app(app)
 
-    from Registros5s import home, registro, exportar
+    from Registros5s import home, registro, exportar, admin
 
     app.register_blueprint(home.bp)
     app.register_blueprint(registro.bp)
     app.register_blueprint(exportar.bp)
+    app.register_blueprint(admin.bp)
 
     from .models import Auditoria, Respuesta
 

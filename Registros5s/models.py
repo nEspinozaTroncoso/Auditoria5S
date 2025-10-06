@@ -9,7 +9,9 @@ class Auditoria(db.Model):
     responsable = db.Column(db.String(100))
     area = db.Column(db.String(100))  # <-- Agrega este campo
     total = db.Column(db.Float)
-    respuestas = db.relationship("Respuesta", backref="auditoria", lazy=True)
+    respuestas = db.relationship(
+        "Respuesta", backref="auditoria", lazy=True, cascade="all, delete-orphan"
+    )
 
 
 class Respuesta(db.Model):

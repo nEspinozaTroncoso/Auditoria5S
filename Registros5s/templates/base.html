@@ -50,6 +50,17 @@
                         </a></li>
 
                 </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if session.admin %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin.logout') }}" class="nav-link text-danger">Cerrar sesión</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a href="{{ url_for('admin.login') }}" class="nav-link">Admin</a>
+                    </li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
     </nav>

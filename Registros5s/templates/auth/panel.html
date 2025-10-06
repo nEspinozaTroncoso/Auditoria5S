@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Panel de Administración</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Agregar responsable:</label>
+            <input type="text" name="nuevo_responsable" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label>Agregar área:</label>
+            <input type="text" name="nuevo_area" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-success">Guardar cambios</button>
+    </form>
+    <hr>
+    <h3>Responsables actuales:</h3>
+    <ul>
+        {% for r in RESPONSABLES %}
+        <li>{{ r }} <a href="{{ url_for('admin.eliminar_responsable', nombre=r) }}"
+                class="btn btn-danger btn-sm">Eliminar</a></li>
+        {% endfor %}
+    </ul>
+    <h3>Áreas actuales:</h3>
+    <ul>
+        {% for a in AREAS %}
+        <li>{{ a }} <a href="{{ url_for('admin.eliminar_area', nombre=a) }}" class="btn btn-danger btn-sm">Eliminar</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <hr>
+    <h3>Auditorías</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fecha</th>
+                <th>Responsable</th>
+                <th>Área</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for aud in auditorias %}
+            <tr>
+                <td>{{ aud.id }}</td>
+                <td>{{ aud.fecha }}</td>
+                <td>{{ aud.responsable }}</td>
+                <td>{{ aud.area }}</td>
+                <td>
+                    <a href="{{ url_for('registro.detalle', auditoria_id=aud.id) }}" class="btn btn-info btn-sm">Ver</a>
+                    <a href="{{ url_for('admin.eliminar_auditoria', id=aud.id) }}"
+                        class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{{ url_for('admin.logout') }}" class="btn btn-secondary">Cerrar sesión</a>
+</div>
+{% endblock %}
