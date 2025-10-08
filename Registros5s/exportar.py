@@ -181,7 +181,7 @@ def exportar_excel(auditoria_id):
         cell_total.border = thin_border
 
     # Ajustar ancho de columnas
-    ws.column_dimensions["B"].width = 50
+    ws.column_dimensions["B"].width = 60
     ws.column_dimensions["C"].width = 15
     ws.column_dimensions["D"].width = 18
 

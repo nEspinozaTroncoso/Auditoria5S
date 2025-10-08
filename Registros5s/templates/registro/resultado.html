@@ -41,6 +41,8 @@ Resultado Auditoría
         </div>
     </div>
     {% endfor %}
-    <a href="{{ url_for('registro.formulario') }}" class="btn btn-secondary w-100 mt-4">Nueva Auditoría</a>
+    <div class="d-flex justify-content-center mb-5 mt-4">
+        <a href="{{ url_for('registro.formulario') }}" class="btn btn-secondary  px-5">Nueva Auditoría</a>
+    </div>
 </div>
 {% endblock %}
