@@ -51,6 +51,9 @@
 
                 </ul>
                 <ul class="navbar-nav ms-auto">
+                    <a href="{{ url_for('home.shutdown') }}"
+                        onclick="return confirm('¿Estás seguro de que quieres cerrar la aplicación?');">Cerrar
+                        Aplicación</a>
                     {% if session.admin %}
                     <li class="nav-item">
                         <a href="{{ url_for('admin.logout') }}" class="nav-link text-danger">Cerrar sesión</a>
