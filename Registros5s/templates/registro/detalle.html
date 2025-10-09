@@ -14,7 +14,9 @@
             <strong>Porcentaje Total:</strong> {{ auditoria.total }}%
         </div>
         <div class="col-md-3 text-end">
-            <a href="{{ url_for('exportar.exportar_excel', auditoria_id=auditoria.id) }}" class="btn btn-success w-100">
+            <a href="#"
+                onclick="abrirDescarga('{{ url_for('exportar.exportar_excel', auditoria_id=auditoria.id) }}'); return false;"
+                class="btn btn-success w-100">
                 Exportar a Excel
             </a>
         </div>
@@ -46,4 +48,14 @@
         <a href="{{ url_for('registro.historial') }}" class="btn btn-secondary btn-lg px-5">Volver al Historial</a>
     </div>
 </div>
+
+<script>
+    function abrirDescarga(urlRelativa) {
+        // Agregamos window.location.origin para asegurar el host y puerto
+        const fullUrl = window.location.origin + urlRelativa;
+
+        // Abre el navegador predeterminado del sistema (el fix para PyWebView)
+        window.open(fullUrl, '_system');
+    }
+</script>
 {% endblock %}

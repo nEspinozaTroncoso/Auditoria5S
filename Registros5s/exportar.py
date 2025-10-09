@@ -1,17 +1,28 @@
 import os
-from flask import Blueprint, current_app, send_file
+from flask import Blueprint, current_app, send_file, url_for, Response
 from .models import Auditoria, Respuesta
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 from io import BytesIO
 from openpyxl.drawing.image import Image as XLImage
+import webbrowser
+
+try:
+    import webview
+
+    if webview.windows:
+        window = webview.windows[0]
+    else:
+        window = None
+except Exception:
+    window = None
 
 bp = Blueprint("exportar", __name__, url_prefix="/exportar")
 
 
-@bp.route("/exportar_excel/<int:auditoria_id>")
-def exportar_excel(auditoria_id):
+@bp.route("/servir_excel/<int:auditoria_id>")
+def servir_excel(auditoria_id):
     auditoria = Auditoria.query.get_or_404(auditoria_id)
     respuestas = Respuesta.query.filter_by(auditoria_id=auditoria.id).all()
 
@@ -207,3 +218,21 @@ def exportar_excel(auditoria_id):
         as_attachment=True,
         mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
+
+
+# --- Función de Manejo (Abre el navegador y lo redirecciona) ---
+@bp.route("/exportar_excel/<int:auditoria_id>")
+def exportar_excel(auditoria_id):
+    # Obtener el puerto y host actual (no los usaremos para concatenar, solo para contexto si es necesario)
+    host = current_app.config.get("HOST", "127.0.0.1")
+    port = current_app.config.get("PORT", 5000)
+
+    # 1. CONSTRUCCIÓN CLAVE: Usar _external=True para obtener la URL COMPLETA
+    # Flask debería generar: http://127.0.0.1:5000/exportar/servir_excel/1
+    full_url = url_for(
+        "exportar.servir_excel", auditoria_id=auditoria_id, _external=True
+    )
+    # 2. Abrir el navegador por defecto del sistema
+    webbrowser.open_new_tab(full_url)
+    # 3. Finalizar el hilo de PyWebView.
+    return Response(status=200)
