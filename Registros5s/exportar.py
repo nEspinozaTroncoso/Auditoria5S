@@ -143,7 +143,7 @@ def exportar_excel(auditoria_id):
                 if os.path.exists(img_path):
                     # Asegúrate de que XLImage sea la clase correcta para la librería que usas (ej: openpyxl.drawing.image.Image)
                     img = XLImage(img_path)
-                    img.width = 75
+                    img.width = 100
                     img.height = 100
                     img_cell = f"{get_column_letter(img_col)}{row_num}"
                     ws.add_image(img, img_cell)
