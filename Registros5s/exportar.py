@@ -128,16 +128,27 @@ def exportar_excel(auditoria_id):
 
             # Insertar imagen si existe
             if respuesta.imagen_path:
+                # 1. OBTENER LA RUTA BASE EXTERNA DESDE LA CONFIGURACIÓN
+                # La variable 'UPLOAD_FOLDER' de Flask apunta a la ruta persistente externa (ej: .../Auditoria_5S_Datos/uploads)
+                UPLOAD_DIR_EXTERNO = current_app.config["UPLOAD_FOLDER"]
+
+                # 2. CONSTRUIR LA RUTA COMPLETA DE LA IMAGEN
+                # respuesta.imagen_path solo contiene el nombre del archivo (ej: 'foto.jpg')
                 img_path = os.path.join(
-                    current_app.static_folder, respuesta.imagen_path
+                    UPLOAD_DIR_EXTERNO,  # Usamos la ruta externa aquí
+                    respuesta.imagen_path,
                 )
+
+                # El resto de la lógica de exportación permanece igual
                 if os.path.exists(img_path):
+                    # Asegúrate de que XLImage sea la clase correcta para la librería que usas (ej: openpyxl.drawing.image.Image)
                     img = XLImage(img_path)
-                    img.width = 100
+                    img.width = 75
                     img.height = 100
                     img_cell = f"{get_column_letter(img_col)}{row_num}"
                     ws.add_image(img, img_cell)
                     ws.row_dimensions[row_num].height = 80
+
                 ws.cell(row=row_num, column=img_col).border = thin_border
             else:
                 ws.cell(row=row_num, column=img_col, value="").border = thin_border

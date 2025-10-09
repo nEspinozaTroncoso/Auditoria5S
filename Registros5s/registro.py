@@ -51,7 +51,7 @@ def formulario():
                     imagen_path_full = imagen_path_full.replace("\\", "/")
                     imagen.save(imagen_path_full)
                     # Guarda solo la ruta relativa a static
-                    imagen_path = f"uploads/{imagen.filename}"
+                    imagen_path = imagen.filename
 
                 # Guardar respuesta en DB
                 respuesta = Respuesta(

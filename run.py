@@ -4,7 +4,7 @@ from threading import Timer
 from Registros5s import create_app  # Importa tu función de creación de app
 
 HOST = "127.0.0.1"  # Mejor usar localhost para un ejecutable personal
-PORT = 8000
+PORT = 5000
 URL = f"http://{HOST}:{PORT}"
 
 
